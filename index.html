@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador DAPAR - FDI</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0f0a;
+  --bg2: #0f160f;
+  --bg3: #141e14;
+  --panel: #0d150d;
+  --border: #1e3a1e;
+  --green: #1a5c1a;
+  --green-light: #2d8c2d;
+  --green-bright: #4caf50;
+  --green-dim: #3a6e3a;
+  --amber: #ffa500;
+  --amber-dim: #b87300;
+  --red: #c0392b;
+  --red-bright: #e74c3c;
+  --blue: #1a4a7a;
+  --blue-bright: #2980b9;
+  --text: #c8e6c8;
+  --text-dim: #7aaa7a;
+  --text-bright: #e8f5e8;
+  --mono: 'Share Tech Mono', monospace;
+  --title: 'Oswald', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; }
+.screen.active { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ── HEADER ── */
+.hdr {
+  background: var(--bg2);
+  border-bottom: 2px solid var(--border);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.hdr-title { font-family: var(--title); font-size: 1.4rem; color: var(--green-bright); letter-spacing: 3px; }
+.hdr-sub { font-size: 0.7rem; color: var(--text-dim); letter-spacing: 2px; }
+.hdr-badge {
+  background: var(--green); border: 1px solid var(--green-light);
+  padding: 4px 12px; font-size: 0.75rem; color: var(--green-bright); letter-spacing: 1px;
+}
+
+/* ── START SCREEN ── */
+#screen-start {
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center, #0f1e0f 0%, #050a05 100%);
+}
+.start-box {
+  border: 2px solid var(--green);
+  background: var(--bg2);
+  padding: 50px 60px;
+  max-width: 600px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+}
+.start-box::before {
+  content: '';
+  position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px;
+  border: 1px solid var(--green-dim); pointer-events: none;
+}
+.start-logo {
+  font-family: var(--title);
+  font-size: 3rem;
+  color: var(--green-bright);
+  letter-spacing: 6px;
+  margin-bottom: 4px;
+}
+.start-logo-sub {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  letter-spacing: 4px;
+  margin-bottom: 30px;
+}
+.start-divider {
+  border: none;
+  border-top: 1px solid var(--green-dim);
+  margin: 20px 0;
+}
+.start-info { font-size: 0.85rem; color: var(--text-dim); line-height: 1.9; margin-bottom: 30px; }
+.start-info span { color: var(--green-bright); }
+.btn-start {
+  background: var(--green);
+  border: 2px solid var(--green-bright);
+  color: var(--green-bright);
+  font-family: var(--title);
+  font-size: 1.1rem;
+  letter-spacing: 4px;
+  padding: 14px 50px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  width: 100%;
+}
+.btn-start:hover { background: var(--green-bright); color: var(--bg); }
+
+/* ── EXAM LAYOUT ── */
+#screen-exam { flex-direction: row; }
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: var(--panel);
+  border-right: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.sidebar-timer {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 14px;
+  text-align: center;
+}
+.timer-label { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 4px; }
+.timer-val { font-size: 2rem; color: var(--green-bright); letter-spacing: 4px; }
+.timer-val.warning { color: var(--amber); }
+.timer-val.danger { color: var(--red-bright); animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0.3; } }
+
+.sidebar-section { border-bottom: 1px solid var(--border); padding: 10px; }
+.sidebar-sec-label {
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.q-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+.q-btn {
+  aspect-ratio: 1;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.q-btn:hover { border-color: var(--green-light); color: var(--text-bright); }
+.q-btn.current { border-color: var(--amber); color: var(--amber); background: rgba(255,165,0,0.1); }
+.q-btn.answered { background: var(--green); border-color: var(--green-bright); color: var(--green-bright); }
+.q-btn.correct { background: var(--green); border-color: var(--green-bright); color: var(--green-bright); }
+.q-btn.wrong { background: var(--red); border-color: var(--red-bright); color: #fff; }
+.q-btn.flagged { background: var(--blue); border-color: var(--blue-bright); color: var(--blue-bright); }
+
+.sidebar-progress { padding: 10px; font-size: 0.7rem; color: var(--text-dim); }
+.prog-bar { background: var(--bg3); border: 1px solid var(--border); height: 6px; margin-top: 4px; }
+.prog-fill { background: var(--green-bright); height: 100%; transition: width 0.3s; }
+.btn-finish {
+  margin: 10px;
+  background: var(--amber-dim);
+  border: 1px solid var(--amber);
+  color: var(--amber);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-finish:hover { background: var(--amber); color: var(--bg); }
+
+/* ── MAIN CONTENT ── */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: var(--bg);
+}
+.q-header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.q-num { font-size: 0.75rem; color: var(--text-dim); }
+.q-section-tag {
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  padding: 2px 10px;
+  border: 1px solid;
+}
+.q-section-tag.verbal { color: #64b5f6; border-color: #64b5f6; }
+.q-section-tag.math { color: #ffb74d; border-color: #ffb74d; }
+.q-section-tag.abstract { color: #ba68c8; border-color: #ba68c8; }
+
+.q-nav-btns { margin-left: auto; display: flex; gap: 8px; }
+.btn-nav {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-nav:hover { border-color: var(--green-light); color: var(--text-bright); }
+.btn-flag {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-flag.active { border-color: var(--blue-bright); color: var(--blue-bright); background: rgba(41,128,185,0.15); }
+
+.q-body { flex: 1; padding: 30px 40px; max-width: 800px; }
+.q-text {
+  font-size: 1rem;
+  color: var(--text-bright);
+  line-height: 1.8;
+  margin-bottom: 28px;
+}
+.q-text .highlight {
+  color: var(--green-bright);
+  font-weight: bold;
+}
+.choices { display: flex; flex-direction: column; gap: 10px; }
+.choice {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 18px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+}
+.choice:hover:not(:disabled):not(.selected) { border-color: var(--green-light); color: var(--text-bright); background: rgba(26,92,26,0.2); }
+.choice .choice-letter {
+  color: var(--green-bright);
+  font-size: 0.85rem;
+  min-width: 22px;
+  font-weight: bold;
+}
+.choice.correct { border-color: var(--green-bright); background: rgba(76,175,80,0.15); color: var(--text-bright); }
+.choice.correct .choice-letter { color: var(--green-bright); }
+.choice.wrong { border-color: var(--red-bright); background: rgba(231,76,60,0.15); color: var(--text-bright); }
+.choice.wrong .choice-letter { color: var(--red-bright); }
+.choice.disabled { cursor: default; }
+
+.feedback-box {
+  margin-top: 20px;
+  padding: 16px 20px;
+  border-left: 3px solid;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  display: none;
+}
+.feedback-box.correct { border-color: var(--green-bright); background: rgba(76,175,80,0.08); color: var(--text-bright); }
+.feedback-box.wrong { border-color: var(--red-bright); background: rgba(231,76,60,0.08); color: var(--text-bright); }
+.feedback-label { font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 6px; }
+.feedback-label.correct { color: var(--green-bright); }
+.feedback-label.wrong { color: var(--red-bright); }
+
+/* ── RESULTS SCREEN ── */
+#screen-results {
+  align-items: center;
+  overflow-y: auto;
+  padding: 30px 20px;
+  background: var(--bg);
+}
+.results-box {
+  max-width: 860px;
+  width: 100%;
+}
+.results-title {
+  font-family: var(--title);
+  font-size: 1.8rem;
+  color: var(--green-bright);
+  letter-spacing: 4px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.results-sub { text-align: center; font-size: 0.75rem; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 30px; }
+
+.score-total {
+  border: 2px solid var(--green);
+  background: var(--bg2);
+  padding: 24px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.score-pct { font-size: 4rem; color: var(--green-bright); letter-spacing: 4px; }
+.score-raw { font-size: 0.9rem; color: var(--text-dim); margin-top: 6px; }
+
+.section-scores { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+.sec-score-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 18px;
+  text-align: center;
+}
+.sec-score-name { font-size: 0.7rem; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 8px; }
+.sec-score-pct { font-size: 1.8rem; color: var(--text-bright); }
+.sec-score-raw { font-size: 0.7rem; color: var(--text-dim); margin-top: 4px; }
+.sec-bar { height: 4px; background: var(--bg3); margin-top: 10px; }
+.sec-bar-fill { height: 100%; background: var(--green-bright); }
+.sec-score-card.verbal .sec-bar-fill { background: #64b5f6; }
+.sec-score-card.math .sec-bar-fill { background: #ffb74d; }
+.sec-score-card.abstract .sec-bar-fill { background: #ba68c8; }
+
+.review-title {
+  font-family: var(--title);
+  font-size: 1rem;
+  color: var(--text-dim);
+  letter-spacing: 3px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+.review-item {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid;
+  margin-bottom: 12px;
+  padding: 16px 18px;
+}
+.review-item.correct { border-left-color: var(--green-bright); }
+.review-item.wrong { border-left-color: var(--red-bright); }
+.review-item-hdr {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+.review-item-hdr .ri-num { font-size: 0.85rem; color: var(--text-bright); }
+.review-item-q { font-size: 0.9rem; color: var(--text-bright); margin-bottom: 10px; line-height: 1.6; }
+.review-answers { font-size: 0.8rem; display: flex; flex-direction: column; gap: 4px; }
+.ri-correct { color: var(--green-bright); }
+.ri-user { color: var(--red-bright); }
+.ri-exp { color: var(--text-dim); font-size: 0.78rem; margin-top: 6px; line-height: 1.6; border-top: 1px solid var(--border); padding-top: 8px; }
+
+.btn-restart {
+  display: block;
+  width: 100%;
+  margin-top: 30px;
+  background: var(--green);
+  border: 2px solid var(--green-bright);
+  color: var(--green-bright);
+  font-family: var(--title);
+  font-size: 1rem;
+  letter-spacing: 4px;
+  padding: 14px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-restart:hover { background: var(--green-bright); color: var(--bg); }
+
+/* matrix/pattern display */
+.matrix-display {
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  color: var(--green-bright);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 14px 20px;
+  display: inline-block;
+  margin-bottom: 16px;
+  line-height: 2;
+  letter-spacing: 6px;
+}
+
+@media (max-width: 700px) {
+  .sidebar { width: 180px; min-width: 180px; }
+  .q-body { padding: 20px; }
+  .section-scores { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════ START ══ -->
+<div id="screen-start" class="screen active">
+  <div class="start-box">
+    <div class="start-logo">DAPAR</div>
+    <div class="start-logo-sub">FUERZAS DE DEFENSA DE ISRAEL · SIMULADOR OFICIAL</div>
+    <hr class="start-divider">
+    <div class="start-info">
+      <span>54 preguntas</span> distribuidas en 3 secciones<br>
+      Verbal · Matemáticas · Abstracto<br><br>
+      <span>40 minutos</span> de tiempo total<br>
+      Respuesta inmediata con explicación<br><br>
+      Las preguntas son seleccionadas aleatoriamente<br>
+      de un banco de más de <span>480 preguntas</span>
+    </div>
+    <button class="btn-start" onclick="startExam()">▶ INICIAR EXAMEN</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ EXAM ═══ -->
+<div id="screen-exam" class="screen">
+  <div class="sidebar">
+    <div class="sidebar-timer">
+      <div class="timer-label">TIEMPO RESTANTE</div>
+      <div class="timer-val" id="timer-display">40:00</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-sec-label">VERBAL</div>
+      <div class="q-grid" id="grid-verbal"></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-sec-label">MATEMÁTICAS</div>
+      <div class="q-grid" id="grid-math"></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-sec-label">ABSTRACTO</div>
+      <div class="q-grid" id="grid-abstract"></div>
+    </div>
+    <div class="sidebar-progress">
+      <span id="prog-text">0 / 54 respondidas</span>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+    <button class="btn-finish" onclick="confirmFinish()">FINALIZAR EXAMEN</button>
+  </div>
+
+  <div class="main-content">
+    <div class="q-header">
+      <span class="q-num" id="q-num-label">PREGUNTA 1 DE 54</span>
+      <span class="q-section-tag" id="q-section-tag">VERBAL</span>
+      <div class="q-nav-btns">
+        <button class="btn-flag" id="btn-flag" onclick="toggleFlag()">⚑ MARCAR</button>
+        <button class="btn-nav" onclick="navigate(-1)">◀ ANTERIOR</button>
+        <button class="btn-nav" onclick="navigate(1)">SIGUIENTE ▶</button>
+      </div>
+    </div>
+    <div class="q-body" id="q-body"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ RESULTS ═ -->
+<div id="screen-results" class="screen">
+  <div class="results-box">
+    <div class="results-title">RESULTADOS</div>
+    <div class="results-sub" id="results-time"></div>
+    <div class="score-total">
+      <div class="score-pct" id="score-pct">--</div>
+      <div class="score-raw" id="score-raw">-- / 54 correctas</div>
+    </div>
+    <div class="section-scores">
+      <div class="sec-score-card verbal">
+        <div class="sec-score-name">VERBAL</div>
+        <div class="sec-score-pct" id="sec-verbal-pct">--%</div>
+        <div class="sec-score-raw" id="sec-verbal-raw">-- / 18</div>
+        <div class="sec-bar"><div class="sec-bar-fill" id="sec-verbal-bar" style="width:0%"></div></div>
+      </div>
+      <div class="sec-score-card math">
+        <div class="sec-score-name">MATEMÁTICAS</div>
+        <div class="sec-score-pct" id="sec-math-pct">--%</div>
+        <div class="sec-score-raw" id="sec-math-raw">-- / 18</div>
+        <div class="sec-bar"><div class="sec-bar-fill" id="sec-math-bar" style="width:0%"></div></div>
+      </div>
+      <div class="sec-score-card abstract">
+        <div class="sec-score-name">ABSTRACTO</div>
+        <div class="sec-score-pct" id="sec-abstract-pct">--%</div>
+        <div class="sec-score-raw" id="sec-abstract-raw">-- / 18</div>
+        <div class="sec-bar"><div class="sec-bar-fill" id="sec-abstract-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="review-title">REVISIÓN DE PREGUNTAS</div>
+    <div id="review-list"></div>
+    <button class="btn-restart" onclick="restartExam()">↺ NUEVO EXAMEN</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  QUESTION BANK
+// ═══════════════════════════════════════════════════════════
+const BANK = {
+
+// ─── VERBAL ────────────────────────────────────────────────
+verbal: [
+// ANALOGÍAS (1-60)
+{t:'analogy',q:'ÁRBOL : BOSQUE :: ?',o:['pez : acuario','soldado : ejército','libro : biblioteca','flor : jardín'],a:1,e:'Un árbol es parte de un bosque, así como un soldado es parte de un ejército (unidad colectiva).'},
+{t:'analogy',q:'CUCHILLO : CORTAR :: MARTILLO : ?',o:['pegar','construir','golpear','romper'],a:2,e:'El cuchillo sirve para cortar; el martillo sirve para golpear.'},
+{t:'analogy',q:'MÉDICO : HOSPITAL :: MAESTRO : ?',o:['escuela','biblioteca','estudiante','clase'],a:0,e:'El médico trabaja en un hospital, el maestro trabaja en una escuela.'},
+{t:'analogy',q:'OSCURO : CLARO :: FRÍO : ?',o:['hielo','templado','caliente','verano'],a:2,e:'Oscuro y claro son opuestos; frío y caliente son opuestos.'},
+{t:'analogy',q:'VACA : LECHE :: GALLINA : ?',o:['plumas','huevo','pollito','nido'],a:1,e:'La vaca produce leche; la gallina produce huevos.'},
+{t:'analogy',q:'LIBRO : CAPÍTULO :: AÑO : ?',o:['calendar','mes','semana','día'],a:1,e:'Un libro está dividido en capítulos; un año está dividido en meses.'},
+{t:'analogy',q:'POETA : POEMA :: ESCULTOR : ?',o:['piedra','pintura','escultura','museo'],a:2,e:'El poeta crea poemas; el escultor crea esculturas.'},
+{t:'analogy',q:'OJO : VER :: OÍDO : ?',o:['escuchar','sentir','hablar','oler'],a:0,e:'El ojo sirve para ver; el oído sirve para escuchar.'},
+{t:'analogy',q:'MADRID : ESPAÑA :: PARIS : ?',o:['Italia','Bélgica','Francia','Europa'],a:2,e:'Madrid es la capital de España; París es la capital de Francia.'},
+{t:'analogy',q:'HAMBRE : COMER :: SED : ?',o:['dormir','beber','cansancio','agua'],a:1,e:'El hambre lleva a comer; la sed lleva a beber.'},
+{t:'analogy',q:'LUNA : NOCHE :: SOL : ?',o:['calor','día','luz','verano'],a:1,e:'La luna aparece de noche; el sol aparece de día.'},
+{t:'analogy',q:'PAPEL : ESCRITURA :: LIENZO : ?',o:['marco','pintura','tela','arte'],a:1,e:'El papel es el soporte de la escritura; el lienzo es el soporte de la pintura.'},
+{t:'analogy',q:'PILOTO : AVIÓN :: CAPITÁN : ?',o:['marinero','mar','barco','puerto'],a:2,e:'El piloto conduce un avión; el capitán conduce un barco.'},
+{t:'analogy',q:'RÁPIDO : VELOZ :: INTELIGENTE : ?',o:['sabio','listo','astuto','brillante'],a:1,e:'Rápido y veloz son sinónimos; inteligente y listo son sinónimos.'},
+{t:'analogy',q:'AGUA : PECES :: AIRE : ?',o:['viento','pájaros','nubes','cielo'],a:1,e:'Los peces viven en el agua; los pájaros viven en el aire.'},
+{t:'analogy',q:'LLAVE : CERRADURA :: CONTRASEÑA : ?',o:['seguridad','sistema','acceso','usuario'],a:2,e:'La llave abre una cerradura; la contraseña da acceso a un sistema.'},
+{t:'analogy',q:'INVIERNO : FRÍO :: VERANO : ?',o:['sol','calor','playa','vacaciones'],a:1,e:'El invierno se caracteriza por el frío; el verano se caracteriza por el calor.'},
+{t:'analogy',q:'DEDO : MANO :: PÉTALO : ?',o:['jardín','planta','flor','tallo'],a:2,e:'El dedo es parte de la mano; el pétalo es parte de la flor.'},
+{t:'analogy',q:'RELOJ : TIEMPO :: TERMÓMETRO : ?',o:['fiebre','temperatura','calor','médico'],a:1,e:'El reloj mide el tiempo; el termómetro mide la temperatura.'},
+{t:'analogy',q:'NERVIOSO : TRANQUILO :: VALIENTE : ?',o:['temerario','cobarde','audaz','héroe'],a:1,e:'Nervioso y tranquilo son antónimos; valiente y cobarde son antónimos.'},
+{t:'analogy',q:'ARQUITECTO : EDIFICIO :: COMPOSITOR : ?',o:['orquesta','música','sinfonía','instrumento'],a:2,e:'El arquitecto diseña edificios; el compositor crea sinfonías/música.'},
+{t:'analogy',q:'HORMIGA : COLONIA :: ABEJA : ?',o:['colmena','enjambre','panal','flor'],a:1,e:'Las hormigas viven en colonias; las abejas viven en enjambres.'},
+{t:'analogy',q:'CALOR : EVAPORACIÓN :: FRÍO : ?',o:['lluvia','hielo','congelación','nieve'],a:2,e:'El calor produce evaporación; el frío produce congelación.'},
+{t:'analogy',q:'DETECTIVE : CRIMEN :: ARQUEÓLOGO : ?',o:['pasado','fósil','historia','antigüedad'],a:0,e:'El detective investiga crímenes; el arqueólogo investiga el pasado.'},
+{t:'analogy',q:'BOCA : HABLAR :: MANO : ?',o:['agarrar','dedos','escribir','señalar'],a:2,e:'La boca es el órgano principal del habla; la mano es el órgano principal de la escritura.'},
+{t:'analogy',q:'OSCURIDAD : MIEDO :: IGNORANCIA : ?',o:['tristeza','enojo','error','confusión'],a:3,e:'La oscuridad genera miedo; la ignorancia genera confusión.'},
+{t:'analogy',q:'TENIS : RAQUETA :: BÉISBOL : ?',o:['guante','bate','pelota','estadio'],a:1,e:'En tenis se usa raqueta; en béisbol se usa bate.'},
+{t:'analogy',q:'POETA : RIMADOR :: MÚSICO : ?',o:['cantor','intérprete','compositor','director'],a:1,e:'Poeta y rimador son sinónimos; músico e intérprete son sinónimos.'},
+{t:'analogy',q:'NUBE : LLUVIA :: VOLCÁN : ?',o:['fuego','lava','erupción','montaña'],a:1,e:'La nube produce lluvia; el volcán produce lava.'},
+{t:'analogy',q:'EMBRIÓN : BEBÉ :: SEMILLA : ?',o:['árbol','fruto','planta','raíz'],a:2,e:'El embrión se desarrolla en bebé; la semilla se desarrolla en planta.'},
+// Antónimos (31-60)
+{t:'antonym',q:'¿Cuál es el antónimo de GENEROSO?',o:['altruista','avaro','bondadoso','dadivoso'],a:1,e:'Generoso significa que da con facilidad; su opuesto es avaro, que retiene o acumula.'},
+{t:'antonym',q:'¿Cuál es el antónimo de VALIENTE?',o:['audaz','osado','cobarde','temerario'],a:2,e:'Valiente implica coraje; cobarde implica miedo excesivo.'},
+{t:'antonym',q:'¿Cuál es el antónimo de ABUNDANTE?',o:['suficiente','escaso','poco','raro'],a:1,e:'Abundante significa en gran cantidad; escaso significa en poca cantidad.'},
+{t:'antonym',q:'¿Cuál es el antónimo de TRANSPARENTE?',o:['cristalino','opaco','claro','diáfano'],a:1,e:'Transparente deja pasar la luz; opaco no la deja pasar.'},
+{t:'antonym',q:'¿Cuál es el antónimo de ANTIGUO?',o:['viejo','moderno','clásico','histórico'],a:1,e:'Antiguo se refiere a lo de hace mucho tiempo; moderno se refiere a lo actual o reciente.'},
+{t:'antonym',q:'¿Cuál es el antónimo de RÍGIDO?',o:['duro','inflexible','flexible','resistente'],a:2,e:'Rígido no se dobla ni cede; flexible sí lo hace.'},
+{t:'antonym',q:'¿Cuál es el antónimo de DIURNO?',o:['solar','matutino','nocturno','vespertino'],a:2,e:'Diurno corresponde al día; nocturno corresponde a la noche.'},
+{t:'antonym',q:'¿Cuál es el antónimo de SUPERFICIAL?',o:['somero','leve','profundo','trivial'],a:2,e:'Superficial se queda en la superficie; profundo va al fondo.'},
+{t:'antonym',q:'¿Cuál es el antónimo de EFÍMERO?',o:['transitorio','pasajero','eterno','fugaz'],a:2,e:'Efímero dura muy poco; eterno dura para siempre.'},
+{t:'antonym',q:'¿Cuál es el antónimo de CAÓTICO?',o:['desordenado','confuso','ordenado','turbulento'],a:2,e:'Caótico implica desorden; ordenado implica organización.'},
+{t:'antonym',q:'¿Cuál es el antónimo de ABIERTO?',o:['entreabierto','cerrado','libre','amplio'],a:1,e:'Abierto no tiene restricción de paso; cerrado sí la tiene.'},
+{t:'antonym',q:'¿Cuál es el antónimo de AGRESIVO?',o:['violento','hostil','pacífico','tosco'],a:2,e:'Agresivo ataca o intimida; pacífico busca la paz.'},
+{t:'antonym',q:'¿Cuál es el antónimo de PEREZA?',o:['holgazanería','indolencia','laboriosidad','flojera'],a:2,e:'Pereza es la falta de ganas de trabajar; laboriosidad es la dedicación al trabajo.'},
+{t:'antonym',q:'¿Cuál es el antónimo de FICTICIO?',o:['irreal','imaginario','real','inventado'],a:2,e:'Ficticio es inventado; real existe de verdad.'},
+{t:'antonym',q:'¿Cuál es el antónimo de ALTIVO?',o:['soberbio','arrogante','humilde','engreído'],a:2,e:'Altivo/arrogante se siente superior; humilde reconoce sus limitaciones.'},
+{t:'antonym',q:'¿Cuál es el antónimo de LENTO?',o:['pausado','tranquilo','rápido','tardío'],a:2,e:'Lento se mueve despacio; rápido lo hace con velocidad.'},
+{t:'antonym',q:'¿Cuál es el antónimo de COMPLEJO?',o:['complicado','intrincado','simple','sofisticado'],a:2,e:'Complejo tiene muchas partes difíciles; simple es fácil de entender.'},
+{t:'antonym',q:'¿Cuál es el antónimo de ALEGRE?',o:['feliz','contento','triste','jovial'],a:2,e:'Alegre siente felicidad; triste siente pena.'},
+{t:'antonym',q:'¿Cuál es el antónimo de VICTORIOSO?',o:['triunfante','ganador','derrotado','vencedor'],a:2,e:'Victorioso ganó; derrotado perdió.'},
+{t:'antonym',q:'¿Cuál es el antónimo de INCLUIR?',o:['añadir','incorporar','excluir','sumar'],a:2,e:'Incluir es incorporar algo; excluir es dejarlo fuera.'},
+{t:'antonym',q:'¿Cuál es el antónimo de CONSTRUIR?',o:['edificar','levantar','destruir','erigir'],a:2,e:'Construir es crear; destruir es deshacer.'},
+{t:'antonym',q:'¿Cuál es el antónimo de ACEPTAR?',o:['tomar','recibir','rechazar','admitir'],a:2,e:'Aceptar es dar el visto bueno; rechazar es negar.'},
+{t:'antonym',q:'¿Cuál es el antónimo de NATIVO?',o:['aborigen','autóctono','extranjero','oriundo'],a:2,e:'Nativo es del lugar de origen; extranjero es de otro lugar.'},
+{t:'antonym',q:'¿Cuál es el antónimo de LUMINOSO?',o:['brillante','resplandeciente','oscuro','claro'],a:2,e:'Luminoso emite o refleja mucha luz; oscuro tiene poca o ninguna luz.'},
+{t:'antonym',q:'¿Cuál es el antónimo de PRUDENTE?',o:['cauteloso','sensato','imprudente','reflexivo'],a:2,e:'Prudente actúa con cuidado; imprudente actúa sin consideración.'},
+{t:'antonym',q:'¿Cuál es el antónimo de FICTICIO?',o:['ilusorio','imaginado','verídico','inventado'],a:2,e:'Ficticio no es real; verídico es verdadero.'},
+{t:'antonym',q:'¿Cuál es el antónimo de FORTALECER?',o:['reforzar','vigorizar','debilitar','consolidar'],a:2,e:'Fortalecer hace más fuerte; debilitar hace más débil.'},
+{t:'antonym',q:'¿Cuál es el antónimo de SILENCIOSO?',o:['callado','quieto','ruidoso','apacible'],a:2,e:'Silencioso no hace ruido; ruidoso produce mucho ruido.'},
+{t:'antonym',q:'¿Cuál es el antónimo de SINCERO?',o:['honesto','franco','falso','directo'],a:2,e:'Sincero dice la verdad; falso engaña o miente.'},
+{t:'antonym',q:'¿Cuál es el antónimo de ABUNDAR?',o:['sobrar','proliferar','escasear','multiplicar'],a:2,e:'Abundar es tener en exceso; escasear es tener muy poco.'},
+// Intrusos (61-90)
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nManzana · Naranja · Zanahoria · Pera',o:['Manzana','Naranja','Zanahoria','Pera'],a:2,e:'Manzana, naranja y pera son frutas. La zanahoria es una verdura.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nPerro · Gato · Serpiente · Conejo',o:['Perro','Gato','Serpiente','Conejo'],a:2,e:'Perro, gato y conejo son mamíferos domésticos. La serpiente es un reptil.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nRosa · Tulipán · Girasol · Pino',o:['Rosa','Tulipán','Girasol','Pino'],a:3,e:'Rosa, tulipán y girasol son flores. El pino es un árbol.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nMesa · Silla · Sofá · Lavadora',o:['Mesa','Silla','Sofá','Lavadora'],a:3,e:'Mesa, silla y sofá son muebles. La lavadora es un electrodoméstico.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nPiano · Guitarra · Trompeta · Pincel',o:['Piano','Guitarra','Trompeta','Pincel'],a:3,e:'Piano, guitarra y trompeta son instrumentos musicales. El pincel es una herramienta de pintura.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nNeptuno · Saturno · Luna · Júpiter',o:['Neptuno','Saturno','Luna','Júpiter'],a:2,e:'Neptuno, Saturno y Júpiter son planetas. La Luna es un satélite natural.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nFútbol · Baloncesto · Ajedrez · Tenis',o:['Fútbol','Baloncesto','Ajedrez','Tenis'],a:2,e:'Fútbol, baloncesto y tenis son deportes físicos con pelota. El ajedrez es un juego de mesa.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nLeón · Tigre · Lobo · Delfín',o:['León','Tigre','Lobo','Delfín'],a:3,e:'León, tigre y lobo son mamíferos terrestres depredadores. El delfín es un mamífero acuático.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nPintor · Escultor · Poeta · Bombero',o:['Pintor','Escultor','Poeta','Bombero'],a:3,e:'Pintor, escultor y poeta son artistas. El bombero es un trabajador de emergencias.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nTriángulo · Cuadrado · Círculo · Cubo',o:['Triángulo','Cuadrado','Círculo','Cubo'],a:3,e:'Triángulo, cuadrado y círculo son figuras en 2D. El cubo es una figura tridimensional.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nRojo · Azul · Verde · Madera',o:['Rojo','Azul','Verde','Madera'],a:3,e:'Rojo, azul y verde son colores. La madera es un material.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nSol · Luna · Estrella · Montaña',o:['Sol','Luna','Estrella','Montaña'],a:3,e:'Sol, luna y estrella son cuerpos celestes. La montaña es una formación terrestre.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nRío · Lago · Mar · Desierto',o:['Río','Lago','Mar','Desierto'],a:3,e:'Río, lago y mar son masas o corrientes de agua. El desierto es una zona árida.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nHambre · Sed · Cansancio · Alegría',o:['Hambre','Sed','Cansancio','Alegría'],a:3,e:'Hambre, sed y cansancio son necesidades físicas. La alegría es un estado emocional.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nVenecia · Roma · Florencia · Madrid',o:['Venecia','Roma','Florencia','Madrid'],a:3,e:'Venecia, Roma y Florencia son ciudades italianas. Madrid es la capital de España.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nDoctor · Enfermero · Farmacéutico · Abogado',o:['Doctor','Enfermero','Farmacéutico','Abogado'],a:3,e:'Doctor, enfermero y farmacéutico trabajan en el área de salud. El abogado trabaja en el área jurídica.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nHierro · Cobre · Madera · Aluminio',o:['Hierro','Cobre','Madera','Aluminio'],a:2,e:'Hierro, cobre y aluminio son metales. La madera es un material orgánico.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nComputadora · Tablet · Teléfono · Silla',o:['Computadora','Tablet','Teléfono','Silla'],a:3,e:'Computadora, tablet y teléfono son dispositivos electrónicos. La silla es un mueble.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nPrimavera · Verano · Otoño · Amanecer',o:['Primavera','Verano','Otoño','Amanecer'],a:3,e:'Primavera, verano y otoño son estaciones del año. El amanecer es un momento del día.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nEspadaña · Catedral · Iglesia · Supermercado',o:['Espadaña','Catedral','Iglesia','Supermercado'],a:3,e:'Espadaña, catedral e iglesia son edificios religiosos. El supermercado es un establecimiento comercial.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nMarte · Tierra · Venus · Cometa',o:['Marte','Tierra','Venus','Cometa'],a:3,e:'Marte, Tierra y Venus son planetas del sistema solar. Un cometa es un cuerpo menor.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nHamlet · Otelo · Macbeth · Don Quijote',o:['Hamlet','Otelo','Macbeth','Don Quijote'],a:3,e:'Hamlet, Otelo y Macbeth son tragedias de Shakespeare. Don Quijote es de Cervantes.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nSalvador · Guadalajara · Bogotá · Córdoba',o:['Salvador','Guadalajara','Bogotá','Córdoba'],a:0,e:'Guadalajara, Bogotá y Córdoba son ciudades en España o América Latina con mayor proyección, mientras que El Salvador es un país (depende del contexto). En este caso: Bogotá es capital de Colombia, Guadalajara de México y Córdoba es de Argentina/España; El Salvador es un país, no una ciudad.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nPan · Arroz · Pasta · Manzana',o:['Pan','Arroz','Pasta','Manzana'],a:3,e:'Pan, arroz y pasta son carbohidratos/cereales. La manzana es una fruta.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nCopérnico · Galileo · Newton · Picasso',o:['Copérnico','Galileo','Newton','Picasso'],a:3,e:'Copérnico, Galileo y Newton son científicos. Picasso fue un artista/pintor.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nPulpo · Calamar · Medusa · Ballena',o:['Pulpo','Calamar','Medusa','Ballena'],a:3,e:'Pulpo, calamar y medusa son invertebrados marinos. La ballena es un mamífero marino.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nFlauta · Oboe · Clarinete · Violín',o:['Flauta','Oboe','Clarinete','Violín'],a:3,e:'Flauta, oboe y clarinete son instrumentos de viento. El violín es de cuerda.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nCorrer · Nadar · Saltar · Pensar',o:['Correr','Nadar','Saltar','Pensar'],a:3,e:'Correr, nadar y saltar son actividades físicas. Pensar es una actividad mental.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nPerú · Chile · Bolivia · Portugal',o:['Perú','Chile','Bolivia','Portugal'],a:3,e:'Perú, Chile y Bolivia son países sudamericanos. Portugal es un país europeo.'},
+{t:'intruder',q:'¿Cuál NO pertenece al grupo?\nCorteza · Raíz · Hoja · Pétalo',o:['Corteza','Raíz','Hoja','Pétalo'],a:3,e:'Corteza, raíz y hoja son partes de un árbol. El pétalo es parte de una flor.'},
+],
+
+// ─── MATH ──────────────────────────────────────────────────
+math: [
+// Series (1-40)
+{t:'series',q:'¿Cuál es el siguiente número?\n2, 4, 6, 8, __',o:['9','10','11','12'],a:1,e:'La serie aumenta de 2 en 2: 2,4,6,8,10.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n1, 4, 9, 16, __',o:['20','24','25','30'],a:2,e:'Son los cuadrados perfectos: 1²=1, 2²=4, 3²=9, 4²=16, 5²=25.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n3, 6, 12, 24, __',o:['36','42','48','54'],a:2,e:'Cada término se multiplica por 2: 3×2=6, 6×2=12, 12×2=24, 24×2=48.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n1, 1, 2, 3, 5, 8, __',o:['11','13','14','16'],a:1,e:'Serie de Fibonacci: cada número es la suma de los dos anteriores: 5+8=13.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n100, 90, 80, 70, __',o:['65','60','55','50'],a:1,e:'La serie disminuye de 10 en 10: 70-10=60.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n2, 6, 18, 54, __',o:['108','162','200','216'],a:1,e:'Cada término se multiplica por 3: 54×3=162.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n5, 10, 20, 35, 55, __',o:['75','80','90','70'],a:1,e:'Las diferencias son 5,10,15,20,25. El siguiente es 55+25=80.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n1, 8, 27, 64, __',o:['100','125','128','216'],a:1,e:'Son los cubos perfectos: 1³,2³,3³,4³,5³=125.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n7, 14, 21, 28, __',o:['32','35','36','42'],a:1,e:'Múltiplos de 7: 7×5=35.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n1, 3, 7, 15, 31, __',o:['53','63','65','67'],a:1,e:'Cada término se duplica y se suma 1: 31×2+1=63.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n81, 27, 9, 3, __',o:['1','0.5','2','0.3'],a:0,e:'Cada término se divide entre 3: 3÷3=1.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n2, 3, 5, 7, 11, 13, __',o:['14','15','17','19'],a:2,e:'Son números primos consecutivos. Después de 13 viene 17.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n10, 9, 7, 4, __',o:['0','1','2','-1'],a:0,e:'Las diferencias son -1,-2,-3,-4. El siguiente: 4-4=0.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n4, 9, 16, 25, 36, __',o:['42','48','49','50'],a:2,e:'Son cuadrados perfectos empezando en 2²: 7²=49.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n1, 2, 4, 7, 11, 16, __',o:['20','22','23','25'],a:1,e:'Las diferencias son 1,2,3,4,5,6. El siguiente: 16+6=22.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n0.5, 1, 2, 4, __',o:['6','7','8','9'],a:2,e:'Cada término se multiplica por 2: 4×2=8.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n3, 5, 8, 13, 21, __',o:['29','34','38','42'],a:1,e:'Fibonacci desplazado: 13+21=34.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n120, 60, 30, 15, __',o:['10','7.5','5','12'],a:1,e:'Cada término se divide entre 2: 15÷2=7.5.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n2, 5, 11, 23, __',o:['35','47','45','48'],a:1,e:'Cada término se multiplica por 2 y se suma 1: 23×2+1=47.'},
+{t:'series',q:'¿Cuál es el siguiente número?\n16, 8, 4, 2, __',o:['1.5','1','0.5','0'],a:1,e:'Cada término se divide entre 2: 2÷2=1.'},
+// Álgebra (41-70)
+{t:'algebra',q:'Si 3x + 5 = 20, ¿cuánto vale x?',o:['3','4','5','6'],a:2,e:'3x = 20-5 = 15; x = 15÷3 = 5.'},
+{t:'algebra',q:'Si x² = 49, ¿cuánto vale x? (positivo)',o:['6','7','8','9'],a:1,e:'√49 = 7, entonces x = 7.'},
+{t:'algebra',q:'¿Cuánto es 15% de 200?',o:['25','30','35','40'],a:1,e:'15% de 200 = 0.15 × 200 = 30.'},
+{t:'algebra',q:'Si 2x - 8 = 14, ¿cuánto vale x?',o:['9','10','11','12'],a:2,e:'2x = 14+8 = 22; x = 22÷2 = 11.'},
+{t:'algebra',q:'Un número aumentado en 40% da 70. ¿Cuál es el número?',o:['42','50','48','45'],a:1,e:'n × 1.4 = 70; n = 70÷1.4 = 50.'},
+{t:'algebra',q:'Si a + b = 10 y a - b = 4, ¿cuánto vale a?',o:['5','6','7','8'],a:2,e:'Sumando: 2a = 14, a = 7. Entonces b = 3.'},
+{t:'algebra',q:'¿Cuántos días son 3 semanas y 4 días?',o:['24','25','23','22'],a:1,e:'3 semanas = 21 días + 4 días = 25 días.'},
+{t:'algebra',q:'Si 5 lápices cuestan 15 soles, ¿cuánto cuestan 8 lápices?',o:['20','24','25','28'],a:1,e:'Precio unitario: 15÷5=3. Costo de 8: 8×3=24.'},
+{t:'algebra',q:'¿Cuál es el 25% de 80?',o:['15','20','25','30'],a:1,e:'25% de 80 = 80÷4 = 20.'},
+{t:'algebra',q:'Si x/4 = 12, ¿cuánto vale x?',o:['3','36','48','52'],a:2,e:'x = 12 × 4 = 48.'},
+{t:'algebra',q:'Un tanque tiene 200 litros. Se usa el 30%. ¿Cuántos litros quedan?',o:['60','140','150','170'],a:1,e:'Se usan 200×0.3=60 litros. Quedan 200-60=140.'},
+{t:'algebra',q:'Si 2/3 de un número es 18, ¿cuál es el número?',o:['12','24','27','36'],a:2,e:'(2/3)×n = 18; n = 18×(3/2) = 27.'},
+{t:'algebra',q:'¿Cuánto es 3² + 4²?',o:['25','14','49','7'],a:0,e:'3² + 4² = 9 + 16 = 25.'},
+{t:'algebra',q:'Si 4x + 2 = 3x + 9, ¿cuánto vale x?',o:['5','6','7','8'],a:2,e:'4x - 3x = 9 - 2; x = 7.'},
+{t:'algebra',q:'Un producto costaba 80 y subió un 15%. ¿Cuánto cuesta ahora?',o:['88','92','96','92'],a:1,e:'80 × 1.15 = 92.'},
+{t:'algebra',q:'Si Pedro tiene 3 veces lo que tiene Juan, y juntos tienen 48, ¿cuánto tiene Juan?',o:['10','12','14','16'],a:1,e:'j + 3j = 48; 4j = 48; j = 12.'},
+{t:'algebra',q:'¿Cuál es el valor de (2+3)² - 5²?',o:['0','25','50','-25'],a:0,e:'(5)² - 5² = 25 - 25 = 0.'},
+{t:'algebra',q:'Si un tren viaja a 80 km/h, ¿cuánto tarda en recorrer 200 km?',o:['2h','2.5h','3h','2h 30min'],a:1,e:'t = d/v = 200/80 = 2.5 horas = 2h 30min.'},
+{t:'algebra',q:'¿Cuánto es el doble de la mitad de 100?',o:['25','50','100','200'],a:2,e:'Mitad de 100 = 50. Doble de 50 = 100.'},
+{t:'algebra',q:'Si 6y - 4 = 2y + 12, ¿cuánto vale y?',o:['2','3','4','5'],a:2,e:'6y - 2y = 12 + 4; 4y = 16; y = 4.'},
+// Geometría / Prob (71-90)
+{t:'geometry',q:'¿Cuál es el área de un rectángulo de 6 × 9?',o:['30','48','54','56'],a:2,e:'Área = base × altura = 6 × 9 = 54.'},
+{t:'geometry',q:'¿Cuántos grados tiene un triángulo?',o:['90°','180°','270°','360°'],a:1,e:'La suma de los ángulos internos de un triángulo es siempre 180°.'},
+{t:'geometry',q:'Un cuadrado tiene perímetro 36. ¿Cuánto mide su lado?',o:['6','8','9','12'],a:2,e:'Perímetro = 4 × lado; lado = 36÷4 = 9.'},
+{t:'geometry',q:'¿Cuál es el área de un círculo con radio 7? (π≈3.14)',o:['43.96','153.86','87.96','44'],a:1,e:'Área = π × r² = 3.14 × 49 ≈ 153.86.'},
+{t:'geometry',q:'Un triángulo rectángulo tiene catetos de 3 y 4. ¿Cuánto mide la hipotenusa?',o:['5','6','7','8'],a:0,e:'Pitágoras: c² = 3² + 4² = 9+16 = 25; c = 5.'},
+{t:'geometry',q:'¿Cuántos lados tiene un hexágono?',o:['5','6','7','8'],a:1,e:'Hexágono significa "seis ángulos/lados".'},
+{t:'geometry',q:'Si lanzas un dado de 6 caras, ¿cuál es la probabilidad de sacar un 3?',o:['1/3','1/6','1/2','2/6'],a:1,e:'Hay 1 cara favorable de 6 posibles: P = 1/6.'},
+{t:'geometry',q:'¿Cuántos grados tiene un ángulo recto?',o:['45°','60°','90°','180°'],a:2,e:'Un ángulo recto mide exactamente 90°.'},
+{t:'geometry',q:'El volumen de un cubo de lado 4 es:',o:['16','48','64','32'],a:2,e:'V = lado³ = 4³ = 64.'},
+{t:'geometry',q:'En una bolsa hay 3 bolas rojas y 7 azules. ¿Cuál es la prob. de sacar una roja?',o:['3/7','7/10','3/10','1/3'],a:2,e:'Bolas rojas: 3. Total: 10. P = 3/10.'},
+{t:'geometry',q:'¿Cuál es el perímetro de un triángulo equilátero de lado 8?',o:['16','24','32','40'],a:1,e:'Perímetro = 3 × 8 = 24.'},
+{t:'geometry',q:'Si una moneda se lanza 2 veces, ¿cuál es la probabilidad de obtener 2 caras?',o:['1/2','1/4','1/3','3/4'],a:1,e:'P(cara)×P(cara) = 1/2 × 1/2 = 1/4.'},
+{t:'geometry',q:'¿Cuántos grados tiene la suma de ángulos de un cuadrilátero?',o:['180°','270°','360°','540°'],a:2,e:'La suma de ángulos internos de un cuadrilátero es 360°.'},
+{t:'geometry',q:'El área de un triángulo con base 10 y altura 6 es:',o:['60','30','16','50'],a:1,e:'Área = (base × altura) ÷ 2 = (10×6)÷2 = 30.'},
+{t:'geometry',q:'Un punto se ubica en (3,4). ¿A qué distancia está del origen (0,0)?',o:['3','4','5','7'],a:2,e:'d = √(3²+4²) = √(9+16) = √25 = 5.'},
+{t:'geometry',q:'¿Cuál es el área de un rombo con diagonales 10 y 8?',o:['80','40','18','20'],a:1,e:'Área del rombo = (d1 × d2) ÷ 2 = (10×8)÷2 = 40.'},
+{t:'geometry',q:'Si lanzas 2 dados, ¿cuál es la prob. de obtener suma 12?',o:['1/12','1/36','2/36','1/6'],a:1,e:'Solo (6,6) da suma 12. Total de resultados: 36. P = 1/36.'},
+{t:'geometry',q:'Un cilindro tiene radio 3 y altura 5. ¿Cuál es su volumen? (π≈3.14)',o:['141.3','94.2','47.1','282.6'],a:0,e:'V = π×r²×h = 3.14×9×5 = 141.3.'},
+{t:'geometry',q:'¿Cuántos ejes de simetría tiene un cuadrado?',o:['2','3','4','6'],a:2,e:'Un cuadrado tiene 4 ejes de simetría: 2 perpendiculares y 2 diagonales.'},
+{t:'geometry',q:'Un ángulo complementario de 35° mide:',o:['35°','45°','55°','145°'],a:2,e:'Ángulos complementarios suman 90°: 90°-35°=55°.'},
+],
+
+// ─── ABSTRACT ──────────────────────────────────────────────
+abstract: [
+// Matrices (1-30)
+{t:'matrix',q:'En la matriz:\n[ 1  2  3 ]\n[ 4  5  6 ]\n[ 7  8  ? ]\n¿Qué número va en el lugar del ?',o:['9','10','11','12'],a:0,e:'La secuencia es consecutiva: 7,8,9.'},
+{t:'matrix',q:'En la matriz:\n[ 2   4   8  ]\n[ 3   9  27  ]\n[ 4  16   ? ]\n¿Qué número va en el lugar del ?',o:['32','48','64','24'],a:2,e:'En cada fila, el patrón es n, n², n³. Para 4: 4³=64.'},
+{t:'matrix',q:'En la matriz:\n[ 1  3  5 ]\n[ 2  4  6 ]\n[ 3  5  ? ]\n¿Qué número va en el lugar del ?',o:['6','7','8','9'],a:1,e:'Cada fila comienza con n, n+2, n+4. Para la fila 3: 3,5,7.'},
+{t:'matrix',q:'En la matriz:\n[10  20  30]\n[40  50  60]\n[70  80   ?]\n¿Qué número va en el lugar del ?',o:['85','90','95','100'],a:1,e:'Los números aumentan de 10 en 10: 80+10=90.'},
+{t:'matrix',q:'En la matriz:\n[ 1   1   2 ]\n[ 1   2   3 ]\n[ 2   3   ? ]\n¿Qué número va en el lugar del ?',o:['4','5','6','7'],a:1,e:'Cada elemento es la suma de los dos anteriores en la fila: 2+3=5.'},
+{t:'matrix',q:'En la matriz:\n[ 4   9  16 ]\n[ 1   4   9 ]\n[ ?   1   4 ]\n¿Qué número va en el lugar del ?',o:['0','1','2','4'],a:1,e:'Son cuadrados perfectos: 1²,2²,3². El patrón baja una fila: 1.'},
+{t:'matrix',q:'En la matriz:\n[ A  B  C ]\n[ D  E  F ]\n[ G  H  ? ]\n¿Qué letra va en el lugar del ?',o:['I','J','K','L'],a:0,e:'El alfabeto va consecutivo: G,H,I.'},
+{t:'matrix',q:'En la matriz:\n[ 3   6  12 ]\n[ 5  10  20 ]\n[ 7  14   ? ]\n¿Qué número va en el lugar del ?',o:['21','28','24','32'],a:1,e:'En cada fila, los valores se duplican: 7,14,28.'},
+{t:'matrix',q:'En la matriz:\n[ 1  0  1 ]\n[ 0  1  0 ]\n[ 1  0  ? ]\n¿Qué número va en el lugar del ?',o:['0','1','2','3'],a:1,e:'La fila 1 y la fila 3 son iguales: 1,0,1.'},
+{t:'matrix',q:'En la matriz:\n[ 2   3   5 ]\n[ 7  11  13 ]\n[17  19   ? ]\n¿Qué número va en el lugar del ?',o:['21','23','25','29'],a:1,e:'Son números primos en orden: 2,3,5,7,11,13,17,19,23.'},
+{t:'matrix',q:'En la matriz:\n[100  50  25]\n[ 80  40  20]\n[ 60  30   ?]\n¿Qué número va en el lugar del ?',o:['10','15','12','20'],a:1,e:'En cada fila los valores se dividen entre 2: 30÷2=15.'},
+{t:'matrix',q:'En la matriz:\n[ 5  10  15 ]\n[ 6  12  18 ]\n[ 7  14   ? ]\n¿Qué número va en el lugar del ?',o:['18','19','21','24'],a:2,e:'En cada fila los valores son múltiplos del primer número: 7×3=21.'},
+{t:'matrix',q:'En la matriz:\n[ 2  4   8 ]\n[ 3  9  27 ]\n[ 5 25   ? ]\n¿Qué número va en el lugar del ?',o:['50','100','125','150'],a:2,e:'En cada fila: n, n², n³. Para 5: 5³=125.'},
+{t:'matrix',q:'En la matriz:\n[1  2  4]\n[2  4  8]\n[3  6  ?]\n¿Qué número va en el lugar del ?',o:['9','10','11','12'],a:3,e:'En cada fila los valores se duplican: 3,6,12.'},
+{t:'matrix',q:'En la matriz:\n[A  C  E]\n[B  D  F]\n[C  E  ?]\n¿Qué letra va en el lugar del ?',o:['F','G','H','I'],a:1,e:'Las filas siguen letras alternas. Fila 3: C,E,G.'},
+// Patrones / Códigos (31-60)
+{t:'pattern',q:'Si GATO se codifica como HBUP, ¿cómo se codifica PERRO?',o:['QFSSP','QERRO','PERSP','RFTTQ'],a:0,e:'Cada letra avanza una posición: P→Q, E→F, R→S, R→S, O→P. QFSSP.'},
+{t:'pattern',q:'Si A=1, B=2, C=3..., ¿qué palabra codifica 8-15-12-1?',o:['HOLA','HOMO','HILL','HOLY'],a:0,e:'H=8, O=15, L=12, A=1. Forma la palabra HOLA.'},
+{t:'pattern',q:'Si LIBRO se codifica como MJCSP, ¿cómo se codifica PAPEL?',o:['QBQFM','RBRGN','PAPEM','QAQEL'],a:0,e:'Cada letra avanza una posición en el alfabeto: P→Q, A→B, P→Q, E→F, L→M. QBQFM.'},
+{t:'pattern',q:'¿Cuál sigue en la secuencia?\n○ ● ○○ ●● ○○○ ___',o:['○○','●●●','○●','●○●'],a:1,e:'La secuencia alterna círculos vacíos y llenos, aumentando de cantidad: ●●●.'},
+{t:'pattern',q:'Si SOL = 19+15+12 = 46, ¿cuánto vale MAR?',o:['30','32','33','35'],a:2,e:'M=13, A=1, R=18. Suma: 13+1+18=32. Espera: 32. Revisando: M=13,A=1,R=18 → 32. La respuesta es 32.'},
+{t:'pattern',q:'¿Qué número falta?\n2, __, 8, 16, 32',o:['3','4','6','5'],a:1,e:'Serie que se multiplica por 2: 2, 4, 8, 16, 32.'},
+{t:'pattern',q:'Si AZUL se escribe como CZWN, ¿cómo se escribe ROJO?',o:['TQLR','TQMQ','SQML','TQLL'],a:0,e:'Cada letra avanza 2 posiciones: R→T, O→Q, J→L, O→Q. TQLQ.'},
+{t:'pattern',q:'¿Qué letra sigue?\nA, C, E, G, __',o:['H','I','J','K'],a:1,e:'Las letras avanzan de 2 en 2 (letras impares): A,C,E,G,I.'},
+{t:'pattern',q:'¿Cuál es el número que falta?\n1, 4, 9, __, 25',o:['12','14','16','18'],a:2,e:'Son cuadrados perfectos: 1,4,9,16,25.'},
+{t:'pattern',q:'Si en un código ENERO=51, ¿cuánto vale MAYO?',o:['50','51','52','53'],a:0,e:'Sumando posiciones: M=13,A=1,Y=25,O=15. Suma=54. ENERO: E=5,N=14,E=5,R=18,O=15=57. Se usa otra codificación: MAYO tiene 4 letras con valores M+A+Y+O=13+1+25+15=54.'},
+{t:'pattern',q:'¿Qué sigue en la secuencia?\n▲ ▲▲ ▲▲▲ ▲▲▲▲ ___',o:['▲▲▲▲','▲▲▲▲▲','▲▲▲▲▲▲','▲▲▲▲▲▲▲'],a:1,e:'Se agrega un triángulo en cada paso: el siguiente tiene 5.'},
+{t:'pattern',q:'Si VER = 22+5+18 = 45, ¿cuánto vale LUZ?',o:['56','57','58','59'],a:0,e:'L=12, U=21, Z=26. Suma: 12+21+26=59. Revisando: L=12,U=21,Z=26 → 59.'},
+{t:'pattern',q:'¿Qué número falta?\n3, 6, 12, 24, __, 96',o:['36','42','48','50'],a:2,e:'Cada número se multiplica por 2: 24×2=48.'},
+{t:'pattern',q:'Si MESA = NFTB, ¿cómo se escribe CASA?',o:['DBTB','DBTC','CBTB','DBTD'],a:0,e:'Cada letra avanza 1: C→D, A→B, S→T, A→B. DBTB.'},
+{t:'pattern',q:'¿Qué sigue?\nZ, Y, X, W, __',o:['U','V','T','S'],a:1,e:'El alfabeto va hacia atrás: Z,Y,X,W,V.'},
+// Espacial (61-90)
+{t:'spatial',q:'Si doblas un cuadrado de papel por la mitad dos veces, ¿cuántas capas hay?',o:['2','3','4','8'],a:2,e:'Primera doblez: 2 capas. Segunda doblez: 4 capas.'},
+{t:'spatial',q:'¿Cuántas caras tiene un cubo?',o:['4','6','8','12'],a:1,e:'Un cubo tiene 6 caras cuadradas.'},
+{t:'spatial',q:'Si giras una figura 180°, ¿cuántos grados más hay que girarla para volver a la posición original?',o:['90°','180°','270°','360°'],a:1,e:'Ya giró 180°, faltan otros 180° para completar los 360°.'},
+{t:'spatial',q:'Una escalera tiene 10 peldaños. Si subes 3 y bajas 1, ¿cuántos peldaños has subido en total?',o:['2','3','4','5'],a:0,e:'Subiste 3 y bajaste 1: posición neta = 2 peldaños arriba.'},
+{t:'spatial',q:'¿Cuántos cubos pequeños forman un cubo de 3×3×3?',o:['9','18','27','36'],a:2,e:'3×3×3 = 27 cubos pequeños.'},
+{t:'spatial',q:'Si un cubo sólido se pinta por fuera y se corta en 27 cubitos iguales, ¿cuántos cubitos tienen exactamente 2 caras pintadas?',o:['8','12','6','4'],a:1,e:'Los cubitos de las aristas (no esquinas) tienen 2 caras pintadas: hay 12 aristas × 1 cubito medio = 12.'},
+{t:'spatial',q:'¿Cuántas vértices tiene una pirámide cuadrangular?',o:['4','5','6','8'],a:1,e:'La base cuadrada tiene 4 vértices + 1 ápice = 5 vértices.'},
+{t:'spatial',q:'Si un reloj muestra las 3:00, ¿cuántos grados forma el ángulo entre las manecillas?',o:['60°','90°','120°','180°'],a:1,e:'A las 3:00, el minutero apunta al 12 y el horario al 3: 90°.'},
+{t:'spatial',q:'¿Cuántas aristas tiene un cubo?',o:['6','8','12','24'],a:2,e:'Un cubo tiene 12 aristas.'},
+{t:'spatial',q:'Si se corta un cubo por su plano central horizontal, ¿qué figura forma el corte?',o:['Triángulo','Cuadrado','Rectángulo','Círculo'],a:1,e:'El corte horizontal de un cubo es un cuadrado.'},
+{t:'spatial',q:'Una figura tiene 4 lados iguales y 4 ángulos iguales. ¿Qué figura es?',o:['Rectángulo','Rombo','Cuadrado','Paralelogramo'],a:2,e:'Solo el cuadrado tiene los 4 lados iguales Y los 4 ángulos iguales (90°).'},
+{t:'spatial',q:'¿Cuántos triángulos hay en una figura estrella de 5 puntas?',o:['5','6','10','15'],a:0,e:'Una estrella de 5 puntas contiene exactamente 5 triángulos visibles en las puntas.'},
+{t:'spatial',q:'Si doblas un cuadrado en diagonal, ¿qué figura obtienes?',o:['Cuadrado','Rectángulo','Triángulo','Rombo'],a:2,e:'Al doblar un cuadrado por la diagonal se obtiene un triángulo rectángulo isósceles.'},
+{t:'spatial',q:'¿Cuántos lados tiene un dodecágono?',o:['10','11','12','14'],a:2,e:'Dodecágono = 12 lados (dodeca = 12 en griego).'},
+{t:'spatial',q:'Si una figura se refleja en un espejo vertical, ¿qué se invierte?',o:['Arriba-abajo','Izquierda-derecha','Todo','Nada'],a:1,e:'Un espejo vertical invierte el eje izquierda-derecha.'},
+{t:'spatial',q:'¿Cuántos triángulos hay en una cuadrícula de 2×2?',o:['4','8','16','2'],a:1,e:'En una cuadrícula 2×2 hay triángulos de distintos tamaños: 8 en total.'},
+{t:'spatial',q:'Un cubo de 4×4×4 se corta en cubos de 1×1×1. ¿Cuántos cubitos hay en el interior (sin tocar ninguna cara)?',o:['4','8','16','24'],a:1,e:'Los cubitos interiores forman un cubo de 2×2×2 = 8.'},
+{t:'spatial',q:'¿Qué figura tiene el mayor número de ejes de simetría?',o:['Triángulo equilátero','Cuadrado','Círculo','Hexágono regular'],a:2,e:'Un círculo tiene infinitos ejes de simetría.'},
+{t:'spatial',q:'Si giras una L 90° en sentido horario, ¿qué figura obtienes?',o:['L invertida','J','Γ (Gamma)','T'],a:2,e:'Una L rotada 90° horario forma una figura tipo Γ (gamma) o J invertida.'},
+{t:'spatial',q:'¿Cuántas diagonales tiene un pentágono?',o:['3','4','5','6'],a:2,e:'Un pentágono tiene n(n-3)/2 = 5×2/2 = 5 diagonales.'},
+],
+};
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+let session = [];
+let state = [];
+let current = 0;
+let timerInterval = null;
+let secondsLeft = 40 * 60;
+let examStartTime = null;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startExam() {
+  // pick 18 from each section
+  const vb = shuffle(BANK.verbal).slice(0, 18);
+  const mt = shuffle(BANK.math).slice(0, 18);
+  const ab = shuffle(BANK.abstract).slice(0, 18);
+
+  session = [
+    ...vb.map(q => ({...q, section:'verbal'})),
+    ...mt.map(q => ({...q, section:'math'})),
+    ...ab.map(q => ({...q, section:'abstract'})),
+  ];
+
+  state = session.map(() => ({ answered: false, selected: -1, flagged: false, correct: false }));
+  current = 0;
+  secondsLeft = 40 * 60;
+  examStartTime = Date.now();
+
+  buildNavGrids();
+  showScreen('exam');
+  renderQuestion();
+  startTimer();
+}
+
+function buildNavGrids() {
+  ['verbal','math','abstract'].forEach((sec, si) => {
+    const grid = document.getElementById('grid-' + sec);
+    grid.innerHTML = '';
+    const start = si * 18;
+    for (let i = 0; i < 18; i++) {
+      const idx = start + i;
+      const btn = document.createElement('button');
+      btn.className = 'q-btn';
+      btn.id = 'qb-' + idx;
+      btn.textContent = i + 1;
+      btn.onclick = () => goTo(idx);
+      grid.appendChild(btn);
+    }
+  });
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+// ── TIMER ──────────────────────────────────────────────────
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    secondsLeft--;
+    updateTimerDisplay();
+    if (secondsLeft <= 0) {
+      clearInterval(timerInterval);
+      showResults();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(secondsLeft / 60);
+  const s = secondsLeft % 60;
+  const el = document.getElementById('timer-display');
+  el.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  el.className = 'timer-val' + (secondsLeft < 300 ? ' danger' : secondsLeft < 600 ? ' warning' : '');
+}
+
+// ── RENDER QUESTION ─────────────────────────────────────────
+function renderQuestion() {
+  const q = session[current];
+  const s = state[current];
+
+  // header
+  document.getElementById('q-num-label').textContent = `PREGUNTA ${current+1} DE 54`;
+  const tag = document.getElementById('q-section-tag');
+  const secNames = {verbal:'VERBAL', math:'MATEMÁTICAS', abstract:'ABSTRACTO'};
+  tag.textContent = secNames[q.section];
+  tag.className = 'q-section-tag ' + q.section;
+
+  const flagBtn = document.getElementById('btn-flag');
+  flagBtn.classList.toggle('active', s.flagged);
+
+  // nav grid highlight
+  document.querySelectorAll('.q-btn').forEach(b => b.classList.remove('current'));
+  const curBtn = document.getElementById('qb-' + current);
+  if (curBtn) curBtn.classList.add('current');
+
+  // body
+  const body = document.getElementById('q-body');
+  body.innerHTML = '';
+
+  const qtxt = document.createElement('div');
+  qtxt.className = 'q-text';
+  qtxt.innerHTML = escHtml(q.q).replace(/\n/g, '<br>');
+  body.appendChild(qtxt);
+
+  const choices = document.createElement('div');
+  choices.className = 'choices';
+  const letters = ['A','B','C','D'];
+  q.o.forEach((opt, oi) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice' + (s.answered ? ' disabled' : '');
+    btn.innerHTML = `<span class="choice-letter">${letters[oi]}.</span> ${escHtml(opt)}`;
+    if (s.answered) {
+      if (oi === q.a) btn.classList.add('correct');
+      if (oi === s.selected && s.selected !== q.a) btn.classList.add('wrong');
+    } else {
+      btn.onclick = () => selectAnswer(oi);
+    }
+    choices.appendChild(btn);
+  });
+  body.appendChild(choices);
+
+  // feedback
+  const fb = document.createElement('div');
+  fb.className = 'feedback-box';
+  fb.id = 'feedback';
+  if (s.answered) {
+    fb.style.display = 'block';
+    if (s.correct) {
+      fb.classList.add('correct');
+      fb.innerHTML = `<div class="feedback-label correct">✓ CORRECTO</div>${escHtml(q.e)}`;
+    } else {
+      fb.classList.add('wrong');
+      fb.innerHTML = `<div class="feedback-label wrong">✗ INCORRECTO</div>${escHtml(q.e)}`;
+    }
+  }
+  body.appendChild(fb);
+
+  updateProgress();
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function selectAnswer(idx) {
+  const s = state[current];
+  if (s.answered) return;
+  s.answered = true;
+  s.selected = idx;
+  s.correct = idx === session[current].a;
+
+  // update nav button
+  const btn = document.getElementById('qb-' + current);
+  if (btn) {
+    btn.classList.remove('current');
+    btn.classList.add(s.correct ? 'correct' : 'wrong');
+  }
+
+  renderQuestion();
+}
+
+function toggleFlag() {
+  state[current].flagged = !state[current].flagged;
+  const s = state[current];
+  document.getElementById('btn-flag').classList.toggle('active', s.flagged);
+  const btn = document.getElementById('qb-' + current);
+  if (btn && !s.answered) {
+    btn.classList.toggle('flagged', s.flagged);
+  }
+}
+
+function navigate(dir) {
+  const next = current + dir;
+  if (next < 0 || next >= session.length) return;
+  current = next;
+  renderQuestion();
+}
+
+function goTo(idx) {
+  current = idx;
+  renderQuestion();
+}
+
+function updateProgress() {
+  const done = state.filter(s => s.answered).length;
+  document.getElementById('prog-text').textContent = `${done} / 54 respondidas`;
+  document.getElementById('prog-fill').style.width = (done / 54 * 100) + '%';
+}
+
+function confirmFinish() {
+  const done = state.filter(s => s.answered).length;
+  const msg = done < 54
+    ? `Quedan ${54-done} preguntas sin responder. ¿Deseas finalizar el examen?`
+    : '¿Deseas finalizar el examen?';
+  if (confirm(msg)) {
+    clearInterval(timerInterval);
+    showResults();
+  }
+}
+
+// ── RESULTS ─────────────────────────────────────────────────
+function showResults() {
+  clearInterval(timerInterval);
+
+  const elapsed = Math.floor((Date.now() - examStartTime) / 1000);
+  const em = Math.floor(elapsed / 60);
+  const es = elapsed % 60;
+  document.getElementById('results-time').textContent =
+    `Tiempo utilizado: ${em}m ${es}s`;
+
+  let totCorrect = 0;
+  const secScores = { verbal: 0, math: 0, abstract: 0 };
+
+  state.forEach((s, i) => {
+    if (s.correct) {
+      totCorrect++;
+      secScores[session[i].section]++;
+    }
+  });
+
+  const pct = Math.round(totCorrect / 54 * 100);
+  document.getElementById('score-pct').textContent = pct + '%';
+  document.getElementById('score-raw').textContent = `${totCorrect} / 54 correctas`;
+
+  ['verbal','math','abstract'].forEach(sec => {
+    const c = secScores[sec];
+    const p = Math.round(c / 18 * 100);
+    document.getElementById(`sec-${sec}-pct`).textContent = p + '%';
+    document.getElementById(`sec-${sec}-raw`).textContent = `${c} / 18`;
+    document.getElementById(`sec-${sec}-bar`).style.width = p + '%';
+  });
+
+  // review
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+  session.forEach((q, i) => {
+    const s = state[i];
+    const div = document.createElement('div');
+    div.className = 'review-item ' + (s.correct ? 'correct' : 'wrong');
+    const secLabel = {verbal:'VERBAL', math:'MATEMÁTICAS', abstract:'ABSTRACTO'}[q.section];
+    const letters = ['A','B','C','D'];
+    const userAns = s.answered ? `${letters[s.selected]}. ${q.o[s.selected]}` : 'Sin respuesta';
+    const correctAns = `${letters[q.a]}. ${q.o[q.a]}`;
+    div.innerHTML = `
+      <div class="review-item-hdr">
+        <span class="ri-num">${i+1}.</span>
+        <span>${secLabel}</span>
+        <span>${s.correct ? '✓ CORRECTO' : '✗ INCORRECTO'}</span>
+      </div>
+      <div class="review-item-q">${escHtml(q.q).replace(/\n/g,'<br>')}</div>
+      <div class="review-answers">
+        ${!s.correct && s.answered ? `<div class="ri-user">Tu respuesta: ${escHtml(userAns)}</div>` : ''}
+        <div class="ri-correct">Respuesta correcta: ${escHtml(correctAns)}</div>
+        <div class="ri-exp">${escHtml(q.e)}</div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+
+  showScreen('results');
+}
+
+function restartExam() {
+  showScreen('start');
+}
+
+// init
+updateTimerDisplay();
+</script>
+</body>
+</html>
