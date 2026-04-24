@@ -83,4 +83,14 @@ const ABSTRACT_QUESTIONS = [
 {t:'pattern',q:'¿Cuál es el siguiente elemento de la secuencia de grupos?\n△, △△, □, △△△, □□, △△△△, __',o:['□□□','△△△△△','□△','△□'],a:0,e:'Los triángulos aumentan (1,2,3,4...) y los cuadrados aumentan (1,2,3...). Tras 4 triángulos siguen 3 cuadrados: □□□.'},
 // HARD
 {t:'matrix',q:'En la matriz:\n[ 1   3   9   ]\n[ 2   6  18   ]\n[ 4  12   ?   ]\nRegla de filas: ×3 entre columnas. Regla de col 1: potencias de 2 (1,2,4). ¿Qué va en ?',o:['24','36','48','72'],a:1,e:'Fila 3 comienza en 4. Patrón ×3: 4, 12, 36.'},
+// HARD
+{t:'series',q:'¿Qué número sigue en la secuencia de diferencias crecientes?\n0, 1, 4, 10, 20, 35, __',o:['50','54','56','60'],a:2,e:'Las diferencias entre términos son 1,3,6,10,15 (números triangulares). La siguiente diferencia es 21 (T6). 35+21=56.'},
+// HARD
+{t:'pattern',q:'En el sistema de doble codificación: cada vocal vale el doble de su posición y cada consonante vale su posición. ¿Cuánto vale la letra O?',o:['15','30','16','32'],a:1,e:'O es la 15ª letra del alfabeto y es vocal: 15×2=30.'},
+// HARD
+{t:'spatial',q:'Un cubo de 3×3×3 tiene pintadas sus caras externas. ¿Cuántos cubitos tienen exactamente 0 caras pintadas (completamente interiores)?',o:['0','1','4','8'],a:1,e:'El interior del cubo 3×3×3 sin la capa exterior (1 bloque de ancho) es un cubo de 1×1×1 = 1 cubito.'},
+// HARD
+{t:'series',q:'Secuencia de dos reglas alternas (×2 y −1):\n3, 6, 5, 10, 9, 18, 17, __',o:['16','32','34','34'],a:2,e:'Alternando ×2 y −1: 3(×2)→6(−1)→5(×2)→10(−1)→9(×2)→18(−1)→17(×2)→34.'},
+// HARD
+{t:'matrix',q:'En la matriz 3×3, cada elemento es el producto de su número de fila y número de columna:\n[ 1  2  3 ]\n[ 2  4  6 ]\n[ 3  6  ? ]\n¿Qué va en ?',o:['7','8','9','12'],a:2,e:'Elemento [i,j] = i×j. Posición [3,3] = 3×3 = 9.'},
 ];
