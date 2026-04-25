@@ -51,21 +51,6 @@ function renderQuestion() {
   });
   body.appendChild(choices);
 
-  const fb = document.createElement('div');
-  fb.className = 'feedback-box';
-  fb.id = 'feedback';
-  if (s.answered) {
-    fb.style.display = 'block';
-    if (s.correct) {
-      fb.classList.add('correct');
-      fb.innerHTML = `<div class="feedback-label correct">✓ CORRECTO</div>${escHtml(q.e)}`;
-    } else {
-      fb.classList.add('wrong');
-      fb.innerHTML = `<div class="feedback-label wrong">✗ INCORRECTO</div>${escHtml(q.e)}`;
-    }
-  }
-  body.appendChild(fb);
-
   updateProgress();
 }
 
@@ -99,7 +84,7 @@ function selectAnswer(idx) {
         current = next;
         renderQuestion();
       }
-    }, 1200);
+    }, 800);
   }
 }
 
@@ -121,7 +106,7 @@ function showAutoAdvanceBar() {
   bar.setAttribute('role', 'status');
   bar.setAttribute('aria-live', 'polite');
   bar.innerHTML = `
-    <span class="auto-advance-label">Avanzando en 1.2s…</span>
+    <span class="auto-advance-label">Avanzando en 0.8s…</span>
     <button class="btn-skip-advance" onclick="cancelAutoAdvance()" aria-label="Cancelar avance automático">Mantener aquí</button>
   `;
   body.appendChild(bar);
