@@ -92,8 +92,6 @@ const VERBAL_QUESTIONS = [
 // HARD
 {t:'analogy',q:'EMÉRITO : ACADÉMICO :: LAUREADO : ?',o:['Artista','Premio','Poeta','Científico'],a:2,e:'Emérito designa a un académico que ha alcanzado el máximo reconocimiento honorífico; laureado designa a un poeta o artista coronado con laurel por excelencia excepcional. La relación es: título honorífico máximo : campo de distinción.'},
 // HARD
-{t:'logic',q:'Ana miente los martes y jueves, y dice la verdad el resto de los días. Un día dice: "Ayer mentí". ¿Qué día es hoy?',o:['Lunes','Miércoles','Jueves','Viernes'],a:2,e:'Si hoy fuera miércoles (verdad), ayer fue martes (mentira) → "ayer mentí" sería verdad ✓. Si hoy fuera jueves (mentira), "ayer mentí" sería falso, lo que significa que ayer dijo verdad, y miércoles sí dice verdad ✓. Pero al mentir hoy, la afirmación debe ser falsa. Revisando: jueves miente → "ayer mentí" es mentira → el miércoles no mintió → correcto. Hoy es jueves.'},
-// HARD
 {t:'analogy',q:'IDIOSINCRASIA : INDIVIDUO :: ZEITGEIST : ?',o:['Época','Filósofo','Cultura','Nación'],a:0,e:'La idiosincrasia es el conjunto de rasgos que definen a un individuo; el Zeitgeist (espíritu del tiempo) es el conjunto de ideas y valores que definen a una época histórica.'},
 // HARD
 {t:'intruder',q:'¿Cuál NO pertenece al grupo conceptual?\nHipérbole · Metonimia · Sinécdoque · Epíteto · Paradoja',o:['Hipérbole','Metonimia','Sinécdoque','Epíteto'],a:3,e:'Hipérbole, metonimia, sinécdoque y paradoja son tropos (figuras que alteran el significado). El epíteto es una figura de adorno que añade un adjetivo explicativo sin cambiar el significado sustancial.'},
