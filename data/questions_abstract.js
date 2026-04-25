@@ -36,7 +36,7 @@ const ABSTRACT_QUESTIONS = [
 // HARD
 {t:'matrix',q:'En la matriz:\n[ 1   2   4  ]\n[ 3   6  12  ]\n[ 2   6  18  ]\nRegla fila: ×2 entre columnas. Regla col 1: 1,3,2. ¿Qué número iría en una hipotética fila 4 comenzando con 5 (patrón col1), en la col 3?',o:['10','20','30','40'],a:1,e:'Regla de fila: col2=2×col1, col3=2×col2. Fila 4: 5, 10, 20.'},
 // HARD
-{t:'matrix',q:'En la matriz:\n[  1   1   2  ]\n[  1   2   3  ]\n[  2   3   ?  ]\nCada elemento [i,j] = [i-1,j] + [i,j-1]. ¿Qué va en ?',o:['4','5','6','8'],a:1,e:'[3,3] = [2,3] + [3,2] = 3 + 3 = 6. Espera: verificando la regla [2,2]=[1,2]+[2,1]=1+1=2✓, [2,3]=[1,3]+[2,2]=2+2=4... pero la tabla muestra 3. La regla es suma de los dos anteriores en la fila: 2+3=5.'},
+{t:'matrix',q:'En la matriz:\n[  1   1   2  ]\n[  1   2   3  ]\n[  2   3   ?  ]\nCada término es la suma de los dos anteriores en su fila (y también en su columna). ¿Qué va en ?',o:['4','5','6','8'],a:1,e:'El patrón es tipo Fibonacci: cada término = suma de los dos anteriores. Fila 3: 2, 3, → 2+3=5. Verificación por columnas: col 3 es 2, 3, → 2+3=5. La respuesta es 5.'},
 // HARD
 {t:'series',q:'¿Qué sigue en la secuencia?\n3, 4, 7, 11, 18, 29, __',o:['41','47','43','45'],a:1,e:'Cada término es la suma de los dos anteriores (tipo Fibonacci): 18+29=47.'},
 // HARD
