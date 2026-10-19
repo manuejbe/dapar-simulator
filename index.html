@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulador DAPAR - FDI</title>
+<title>Simulador DAPAR Olim</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -13,52 +13,101 @@
 <div id="screen-start" class="screen active">
   <div class="start-box">
     <div class="start-logo">DAPAR</div>
-    <div class="start-logo-sub">FUERZAS DE DEFENSA DE ISRAEL · SIMULADOR OFICIAL</div>
+    <div class="start-logo-sub">SIMULADOR · EXAMEN PARA OLIM</div>
     <hr class="start-divider">
-    <div class="start-info">
-      <span>54 preguntas</span> distribuidas en 3 secciones<br>
-      Verbal · Matemáticas · Abstracto<br><br>
-      <span>40 minutos</span> de tiempo total<br>
-      Respuesta inmediata con explicación<br><br>
-      Las preguntas son seleccionadas aleatoriamente<br>
-      de un banco de más de <span>480 preguntas</span>
+
+    <div class="mode-grid">
+      <button class="mode-card" onclick="startShort()">
+        <div class="mode-title">Práctica corta</div>
+        <div class="mode-desc">12 preguntas por sección · ~56 min</div>
+        <div class="mode-hint">Formato oficial de preparación</div>
+      </button>
+      <button class="mode-card" onclick="startFull()">
+        <div class="mode-title">Examen completo</div>
+        <div class="mode-desc">25 preguntas por sección · ~2 h</div>
+        <div class="mode-hint">Simula el examen real</div>
+      </button>
+      <button class="mode-card" onclick="openFreePractice()">
+        <div class="mode-title">Práctica libre</div>
+        <div class="mode-desc">Elegí una sola sección · feedback inmediato</div>
+        <div class="mode-hint">Sin presión de tiempo</div>
+      </button>
     </div>
-    <button class="btn-start" onclick="startExam()">▶ INICIAR EXAMEN</button>
+
+    <label class="chk-row">
+      <input type="checkbox" id="inc-instructions" checked>
+      <span>Incluir sección "Comprensión de instrucciones" (en el examen real puede estar o no)</span>
+    </label>
+
+    <div class="info-collapsible">
+      <div class="info-head" onclick="toggleInfo()">
+        <span id="info-chev">▶</span> ¿Cómo es el examen?
+      </div>
+      <div class="info-content" id="info-content">
+        <ul>
+          <li>Puntuación de <b>10 a 90</b>. 90 ≈ top 5% de los que rinden. Es un ranking relativo, no un porcentaje de aciertos.</li>
+          <li>No hay sección verbal en la versión para olim.</li>
+          <li>Normalmente 4 secciones de ~25 preguntas: <b>Analogías figurales</b> (adaptativa, tiempo por pregunta, no se puede volver atrás), <b>Cuantitativo 1</b>, <b>Cuantitativo 2</b> (porcentajes, proporciones, promedios, probabilidad, geometría básica) y, posiblemente, <b>Comprensión de instrucciones</b>.</li>
+          <li>Fuera de la sección figural: tiempo para la <i>sección completa</i> y podés moverte libremente entre preguntas <b>de esa sección</b>. Nunca podés volver a una sección anterior.</li>
+          <li><b>No hay penalización</b> por respuestas incorrectas. Nunca dejes preguntas en blanco.</li>
+          <li>Podés rendir una segunda vez si sacaste entre 10 y 70; cuenta el puntaje más alto.</li>
+          <li>Al finalizar aparece un test de reacción visual (atención sostenida) con 20 rondas.</li>
+          <li>Idiomas disponibles en el examen real: hebreo, inglés, español, árabe, francés, amhárico, ruso.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="history-block">
+      <div class="history-head">Últimos intentos</div>
+      <div id="history-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ FREE ══ -->
+<div id="screen-free" class="screen">
+  <div class="start-box">
+    <div class="start-logo" style="font-size:1.8rem">PRÁCTICA LIBRE</div>
+    <div class="start-logo-sub">Elegí una sección</div>
+    <hr class="start-divider">
+    <div class="mode-grid">
+      <button class="mode-card" onclick="startFreeSection('figural')"><div class="mode-title">Analogías figurales</div><div class="mode-desc">Procedural, por nivel</div></button>
+      <button class="mode-card" onclick="startFreeSection('quant1')"><div class="mode-title">Cuantitativo 1</div><div class="mode-desc">% · ratios · velocidad · fracciones</div></button>
+      <button class="mode-card" onclick="startFreeSection('quant2')"><div class="mode-title">Cuantitativo 2</div><div class="mode-desc">Promedios · probabilidad · ecuaciones · geometría</div></button>
+      <button class="mode-card" onclick="startFreeSection('instructions')"><div class="mode-title">Instrucciones</div><div class="mode-desc">5 opciones, sin ambigüedad</div></button>
+      <button class="mode-card" onclick="startFreeSection('reaction')"><div class="mode-title">Test de reacción</div><div class="mode-desc">Atención sostenida, 20 rondas</div></button>
+      <button class="mode-card" onclick="startFreeSection('verbal')"><div class="mode-title">Verbal <span style="font-size:0.6rem;opacity:0.7">(extra)</span></div><div class="mode-desc">No está en el examen para olim</div></button>
+      <button class="mode-card" onclick="startFreeSection('abstract')"><div class="mode-title">Abstracto <span style="font-size:0.6rem;opacity:0.7">(extra)</span></div><div class="mode-desc">Matrices y patrones</div></button>
+    </div>
+    <button class="btn-link" onclick="goHome()">← Volver</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ INTRO ══ -->
+<div id="screen-intro" class="screen">
+  <div class="start-box">
+    <div class="intro-progress" id="intro-progress"></div>
+    <div class="start-logo" style="font-size:2rem" id="intro-title">—</div>
+    <hr class="start-divider">
+    <div class="intro-instructions" id="intro-instructions"></div>
+    <div class="intro-meta">
+      <div class="intro-meta-item"><span class="intro-meta-l">Preguntas</span><span id="intro-count" class="intro-meta-v">—</span></div>
+      <div class="intro-meta-item"><span class="intro-meta-l">Tiempo</span><span id="intro-time" class="intro-meta-v">—</span></div>
+    </div>
+    <button class="btn-start" id="intro-start">▶ COMENZAR SECCIÓN</button>
+    <button class="btn-link" onclick="goHome()">Cancelar</button>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════════ EXAM ═══ -->
 <div id="screen-exam" class="screen">
-  <div class="sidebar">
-    <div class="sidebar-timer">
-      <div class="timer-label">TIEMPO RESTANTE</div>
-      <div class="timer-val" id="timer-display">40:00</div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-sec-label">VERBAL</div>
-      <div class="q-grid" id="grid-verbal"></div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-sec-label">MATEMÁTICAS</div>
-      <div class="q-grid" id="grid-math"></div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-sec-label">ABSTRACTO</div>
-      <div class="q-grid" id="grid-abstract"></div>
-    </div>
-    <div class="sidebar-progress">
-      <span id="prog-text">0 / 54 respondidas</span>
-      <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
-    </div>
-    <button class="btn-finish" onclick="confirmFinish()">FINALIZAR EXAMEN</button>
-  </div>
-
+  <div class="sidebar" id="sidebar-content"></div>
   <div class="main-content">
     <div class="q-header">
-      <span class="q-num" id="q-num-label">PREGUNTA 1 DE 54</span>
-      <span class="q-section-tag" id="q-section-tag">VERBAL</span>
+      <span class="q-num" id="q-num-label">—</span>
+      <span class="q-section-tag" id="q-section-tag">—</span>
       <div class="q-nav-btns">
-        <button class="btn-flag" id="btn-flag" onclick="toggleFlag()" aria-label="Marcar pregunta">⚑ MARCAR</button>
+        <button class="btn-flag" id="btn-flag" onclick="toggleFlag()" aria-label="Marcar para revisar">⚑ MARCAR</button>
         <button class="btn-nav" onclick="navigate(-1)" aria-label="Pregunta anterior">◀ ANTERIOR</button>
         <button class="btn-nav" onclick="navigate(1)" aria-label="Pregunta siguiente">SIGUIENTE ▶</button>
       </div>
@@ -67,50 +116,38 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════ RESULTS ═ -->
-<div id="screen-results" class="screen">
-  <div class="results-box">
-    <div class="results-title">RESULTADOS</div>
-    <div class="results-sub" id="results-time"></div>
-    <div class="score-total">
-      <div class="score-pct" id="score-pct">--</div>
-      <div class="score-raw" id="score-raw">-- / 54 correctas</div>
+<!-- ══════════════════════════════════ REACTION INTRO ══ -->
+<div id="screen-reaction-intro" class="screen">
+  <div class="start-box" style="max-width:720px">
+    <div class="start-logo" style="font-size:1.6rem">TEST DE REACCIÓN</div>
+    <div class="start-logo-sub">Atención sostenida · 20 rondas</div>
+    <hr class="start-divider">
+    <div class="rx-intro-text">
+      En cada ronda aparecerá brevemente una forma. Tu tarea: <b>apretá la BARRA ESPACIADORA</b> (o tocá la pantalla) <b>solo cuando aparezca un círculo verde</b>. Los dos tonos de verde cuentan como "verde". Hacelo lo más rápido y preciso posible.
     </div>
-    <div class="dapar-score-card">
-      <div class="dapar-label">ESTIMACIÓN DAPAR · ESCALA 10–90</div>
-      <div class="dapar-val" id="dapar-val">--</div>
-      <div class="dapar-band" id="dapar-band">--</div>
-      <div class="dapar-note">* Aproximación estadística — la puntuación oficial puede variar según el baremo vigente</div>
-    </div>
-    <div class="section-scores">
-      <div class="sec-score-card verbal">
-        <div class="sec-score-name">VERBAL</div>
-        <div class="sec-score-pct" id="sec-verbal-pct">--%</div>
-        <div class="sec-score-raw" id="sec-verbal-raw">-- / 18</div>
-        <div class="sec-bar"><div class="sec-bar-fill" id="sec-verbal-bar" style="width:0%"></div></div>
-      </div>
-      <div class="sec-score-card math">
-        <div class="sec-score-name">MATEMÁTICAS</div>
-        <div class="sec-score-pct" id="sec-math-pct">--%</div>
-        <div class="sec-score-raw" id="sec-math-raw">-- / 18</div>
-        <div class="sec-bar"><div class="sec-bar-fill" id="sec-math-bar" style="width:0%"></div></div>
-      </div>
-      <div class="sec-score-card abstract">
-        <div class="sec-score-name">ABSTRACTO</div>
-        <div class="sec-score-pct" id="sec-abstract-pct">--%</div>
-        <div class="sec-score-raw" id="sec-abstract-raw">-- / 18</div>
-        <div class="sec-bar"><div class="sec-bar-fill" id="sec-abstract-bar" style="width:0%"></div></div>
-      </div>
-    </div>
-    <div class="review-title">REVISIÓN DE PREGUNTAS</div>
-    <div id="review-list"></div>
-    <button class="btn-restart" onclick="restartExam()">↺ NUEVO EXAMEN</button>
+    <div id="rx-intro-shapes" class="rx-intro-shapes"></div>
+    <button class="btn-start" onclick="startReactionTest()">▶ COMENZAR TEST</button>
+    <button class="btn-link" onclick="skipReaction()">Saltar e ir a resultados</button>
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════ REACTION ══ -->
+<div id="screen-reaction" class="screen">
+  <div class="reaction-stage" id="reaction-stage-wrapper"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════ RESULTS ═ -->
+<div id="screen-results" class="screen">
+  <div class="results-box" id="results-box"></div>
+</div>
+
 <script src="data/questions_verbal.js"></script>
-<script src="data/questions_math.js"></script>
+<script src="data/questions_quant1.js"></script>
+<script src="data/questions_quant2.js"></script>
 <script src="data/questions_abstract.js"></script>
+<script src="js/instructions_gen.js"></script>
+<script src="js/figural.js"></script>
+<script src="js/reaction.js"></script>
 <script src="js/results.js"></script>
 <script src="js/exam.js"></script>
 <script src="js/app.js"></script>
