@@ -156,7 +156,14 @@ function nextTrial() {
   const t = trials[currentTrialIdx];
   responded = false;
   trialStartMs = Date.now();
-  if (stage) stage.innerHTML = shapeSvg(t.shape, t.color);
+  if (stage) {
+    const size = 140;
+    const w = stage.clientWidth || 500;
+    const h = stage.clientHeight || 360;
+    const x = Math.floor(Math.random() * Math.max(1, w - size));
+    const y = Math.floor(Math.random() * Math.max(1, h - size));
+    stage.innerHTML = `<div style="position:absolute;left:${x}px;top:${y}px;">${shapeSvg(t.shape, t.color)}</div>`;
+  }
 
   stimulusTimeout = setTimeout(() => {
     if (stage) stage.innerHTML = '';
