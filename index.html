@@ -19,12 +19,12 @@
     <div class="mode-grid">
       <button class="mode-card" onclick="startShort()">
         <div class="mode-title">Práctica corta</div>
-        <div class="mode-desc">12 preguntas por sección · ~56 min</div>
+        <div class="mode-desc">12 preguntas por sección · ~51 min</div>
         <div class="mode-hint">Formato oficial de preparación</div>
       </button>
       <button class="mode-card" onclick="startFull()">
         <div class="mode-title">Examen completo</div>
-        <div class="mode-desc">25 preguntas por sección · ~2 h</div>
+        <div class="mode-desc">25 preguntas por sección · ~105 min</div>
         <div class="mode-hint">Simula el examen real</div>
       </button>
       <button class="mode-card" onclick="openFreePractice()">
@@ -47,7 +47,7 @@
         <ul>
           <li>Puntuación de <b>10 a 90</b>. 90 ≈ top 5% de los que rinden. Es un ranking relativo, no un porcentaje de aciertos.</li>
           <li>No hay sección verbal en la versión para olim.</li>
-          <li>Normalmente 4 secciones de ~25 preguntas: <b>Analogías figurales</b> (adaptativa, tiempo por pregunta, no se puede volver atrás), <b>Cuantitativo 1</b>, <b>Cuantitativo 2</b> (porcentajes, proporciones, promedios, probabilidad, geometría básica) y, posiblemente, <b>Comprensión de instrucciones</b>.</li>
+          <li>El examen real tiene normalmente 4 secciones de ~25 preguntas: <b>Analogías figurales</b> (adaptativa, tiempo por pregunta, no se puede volver atrás), <b>Cuantitativo 1</b>, <b>Cuantitativo 2</b> (porcentajes, proporciones, promedios, probabilidad, geometría básica) y, posiblemente, <b>Comprensión de instrucciones</b>. <i>Este simulador omite por ahora la sección figural — próximamente.</i></li>
           <li>Fuera de la sección figural: tiempo para la <i>sección completa</i> y podés moverte libremente entre preguntas <b>de esa sección</b>. Nunca podés volver a una sección anterior.</li>
           <li><b>No hay penalización</b> por respuestas incorrectas. Nunca dejes preguntas en blanco.</li>
           <li>Podés rendir una segunda vez si sacaste entre 10 y 70; cuenta el puntaje más alto.</li>
@@ -71,7 +71,7 @@
     <div class="start-logo-sub">Elegí una sección</div>
     <hr class="start-divider">
     <div class="mode-grid">
-      <button class="mode-card" onclick="startFreeSection('figural')"><div class="mode-title">Analogías figurales</div><div class="mode-desc">Procedural, por nivel</div></button>
+      <button class="mode-card mode-card-disabled" disabled><div class="mode-title">Analogías figurales</div><div class="mode-desc">Próximamente</div></button>
       <button class="mode-card" onclick="startFreeSection('quant1')"><div class="mode-title">Cuantitativo 1</div><div class="mode-desc">% · ratios · velocidad · fracciones</div></button>
       <button class="mode-card" onclick="startFreeSection('quant2')"><div class="mode-title">Cuantitativo 2</div><div class="mode-desc">Promedios · probabilidad · ecuaciones · geometría</div></button>
       <button class="mode-card" onclick="startFreeSection('instructions')"><div class="mode-title">Instrucciones</div><div class="mode-desc">5 opciones, sin ambigüedad</div></button>

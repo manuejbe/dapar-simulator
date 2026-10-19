@@ -496,6 +496,8 @@ body {
   transition: all 0.15s;
 }
 .mode-card:hover { border-color: var(--green-bright); background: rgba(26,92,26,0.2); }
+.mode-card-disabled { opacity: 0.45; cursor: not-allowed; }
+.mode-card-disabled:hover { border-color: var(--border); background: var(--bg3); }
 .mode-title { font-family: var(--title); font-size: 1.05rem; color: var(--green-bright); letter-spacing: 2px; }
 .mode-desc { font-size: 0.78rem; color: var(--text); margin-top: 4px; }
 .mode-hint { font-size: 0.68rem; color: var(--text-dim); margin-top: 2px; }

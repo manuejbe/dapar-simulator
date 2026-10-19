@@ -14,7 +14,7 @@ const CFG = {
       instructions: { count: 25, timeTotal: Math.round(25 * 75) },
     },
   },
-  sectionOrder: ['figural', 'quant1', 'quant2', 'instructions'],
+  sectionOrder: ['quant1', 'quant2', 'instructions'],
   sectionNames: {
     verbal: 'Verbal (no incluida en el examen para olim)',
     quant1: 'Razonamiento cuantitativo 1',
