@@ -246,9 +246,21 @@ function buildExamSidebar() {
 
   const finishBtn = document.createElement('button');
   finishBtn.className = 'btn-finish';
-  finishBtn.textContent = SEC.id === 'figural' ? 'TERMINAR SECCIÓN' : 'TERMINAR SECCIÓN';
+  finishBtn.textContent = 'TERMINAR SECCIÓN';
   finishBtn.onclick = confirmFinishSection;
   sidebar.appendChild(finishBtn);
+
+  const abandonBtn = document.createElement('button');
+  abandonBtn.className = 'btn-abandon';
+  abandonBtn.textContent = '✕ ABANDONAR';
+  abandonBtn.onclick = confirmAbandon;
+  sidebar.appendChild(abandonBtn);
+}
+
+function confirmAbandon() {
+  if (confirm('¿Abandonar la práctica y volver al menú principal? Se perderá el progreso de esta sesión.')) {
+    goHome();
+  }
 }
 
 function updateProgress() {

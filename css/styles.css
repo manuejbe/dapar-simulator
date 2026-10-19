@@ -173,6 +173,19 @@ body {
   transition: background 0.2s;
 }
 .btn-finish:hover { background: var(--amber); color: var(--bg); }
+.btn-abandon {
+  margin: 0 10px 10px 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-abandon:hover { border-color: var(--red-bright); color: var(--red-bright); }
 
 /* ── MAIN CONTENT ── */
 .main-content {
